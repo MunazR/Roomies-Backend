@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 var userSchema = new Schema({
   _id: {
@@ -9,12 +8,13 @@ var userSchema = new Schema({
   firstName: String,
   lastName: String,
   displayName: String,
-  profilePictureUrl: String,
-  invitedTo: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Group'
-  }]
+  profilePictureUrl: String
 });
 
-userSchema.plugin(deepPopulate);
+userSchema.index({
+  firstName: "text",
+  lastName: "text",
+  lastName: "text"
+});
+
 module.exports = mongoose.model('User', userSchema);

@@ -7,8 +7,6 @@ module.exports = function(app) {
     var facebookId = data.facebookId;
 
     UserModel.findById(facebookId)
-      .populate('invitedTo')
-      .deepPopulate('invitedTo.owner')
       .then(function(user) {
         // Check if user already exists
         if (user) {
@@ -47,6 +45,67 @@ module.exports = function(app) {
       });
   });
 
+  app.post('/api/users', function(req, res) {
+    var data = req.body;
+    var name = data.name;
+    var facebookId = data.facebookId;
+
+    var query = {
+      "$and": [{
+        _id: {
+          "$ne": facebookId
+        }
+      }, {
+        "$text": {
+          "$search": name
+        }
+      }]
+    };
+
+    UserModel.find(query)
+      .then(function(users) {
+        if (users && users.length !== 0) {
+          return res.json({
+            status: "OK",
+            message: "Found users",
+            users: users
+          });
+        }
+
+        return res.json({
+          status: "OK",
+          message: "No users"
+        });
+      });
+  });
+
+  app.post('/api/invites', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var query = {
+      invited: facebookId
+    };
+
+    GroupModel.find(query)
+      .populate('owner')
+      .populate('invited')
+      .populate('members')
+      .then(function(groups) {
+        if (groups && groups.length !== 0) {
+          return res.json({
+            status: "OK",
+            message: "Found groups",
+            groups: groups
+          });
+        }
+
+        return res.json({
+          status: "OK",
+          message: "No groups"
+        });
+      });
+  });
+
   app.post('/api/group', function(req, res) {
     var data = req.body;
     var facebookId = data.facebookId;
@@ -55,6 +114,7 @@ module.exports = function(app) {
     };
 
     GroupModel.findOne(query)
+      .populate('invited')
       .populate('members')
       .populate('owner')
       .then(function(group) {
@@ -95,6 +155,7 @@ module.exports = function(app) {
         GroupModel.findById(group._id)
           .populate('owner')
           .populate('members')
+          .populate('invited')
           .then(function(group, err) {
             if (err) {
               return res.status(500).send({
@@ -153,7 +214,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send({
             status: "error",
-            message: "Error deleting group",
+            message: "Error leaving group",
             error: err
           });
         }
@@ -168,15 +229,196 @@ module.exports = function(app) {
             if (err) {
               return res.status(500).send({
                 status: "error",
-                message: "Error deleting group",
+                message: "Error leaving group",
                 error: err
               });
             }
 
             return res.json({
               status: "OK",
-              message: "Deleted group",
-              data: result
+              message: "Left group"
+            })
+          });
+      })
+  });
+
+  app.post('/api/group/kick', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var kickId = data.kickId;
+
+    var query = {
+      owner: facebookId
+    };
+
+    GroupModel
+      .findOne(query)
+      .then(function(group, err) {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error kicking from group",
+            error: err
+          });
+        }
+
+        var index = group.members.indexOf(kickId);
+        if (index > -1) {
+          group.members.splice(index, 1);
+        }
+
+        group.save()
+          .then(function(group, err) {
+            if (err) {
+              return res.status(500).send({
+                status: "error",
+                message: "Error kicking from group",
+                error: err
+              });
+            }
+
+            return res.json({
+              status: "OK",
+              message: "Kicked from group"
+            })
+          });
+      })
+  });
+
+  app.post('/api/group/invite', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var invitedId = data.invitedId;
+
+    var query = {
+      owner: facebookId
+    };
+
+    GroupModel
+      .findOne(query)
+      .then(function(group, err) {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error inviting to group",
+            error: err
+          });
+        }
+
+        var index = group.invited.indexOf(invitedId);
+        if (index === -1) {
+          group.invited.push(invitedId);
+        }
+
+        group.save()
+          .then(function(group, err) {
+            if (err) {
+              return res.status(500).send({
+                status: "error",
+                message: "Error inviting to group",
+                error: err
+              });
+            }
+
+            return res.json({
+              status: "OK",
+              message: "Invited to group",
+              group: group
+            })
+          });
+      })
+  });
+
+  app.post('/api/group/uninvite', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var invitedId = data.invitedId;
+
+    var query = {
+      owner: facebookId
+    };
+
+    GroupModel
+      .findOne(query)
+      .then(function(group, err) {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error uninviting from group",
+            error: err
+          });
+        }
+
+        group.invited.pull(invitedId);
+
+        group.save()
+          .then(function(group, err) {
+            if (err) {
+              return res.status(500).send({
+                status: "error",
+                message: "Error inviting to group",
+                error: err
+              });
+            }
+
+            return res.json({
+              status: "OK",
+              message: "Uninvited from group",
+              group: group
+            })
+          });
+      })
+  });
+
+  app.post('/api/group/accept', function(req, res) {
+    var data = req.body;
+    var ownerId = data.ownerId;
+    var facebookId = data.facebookId;
+
+    var query = {
+      owner: ownerId
+    };
+
+    GroupModel
+      .findOne(query)
+      .then(function(group, err) {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error inviting to group",
+            error: err
+          });
+        }
+
+        var index = group.invited.indexOf(facebookId);
+
+        if (index !== -1) {
+          group.invited.pull(facebookId);
+          index = group.members.indexOf(facebookId)
+          if (index === -1) {
+            group.members.push(facebookId);
+          }
+        } else {
+          return res.status(500).send({
+            status: "error",
+            message: "You were not invited to group"
+          });
+        }
+
+        group.save()
+          .then(function(group, err) {
+            if (err) {
+              return res.status(500).send({
+                status: "error",
+                message: "Error inviting to group",
+                error: err
+              });
+            }
+
+            return res.json({
+              status: "OK",
+              message: "Invited to group",
+              group: group
             })
           });
       })

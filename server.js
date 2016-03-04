@@ -7,8 +7,6 @@ var config = require('./config');
 
 var routes = require('./api/routes');
 
-var UserModel = require('./models/user');
-
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -17,13 +15,6 @@ app.use(bodyParser.json());
 var port = process.env.PORT || config.server.port;
 
 var router = express.Router();
-
-router.use(function(req, res, next) {
-  // Expose DB models throughout API
-  console.log('Middleware running');
-  req.UserModel = UserModel;
-  next();
-});
 
 // Register routes
 routes(app);

@@ -9,6 +9,10 @@ var groupSchema = new Schema({
   members: [{
     type: String,
     ref: 'User'
+  }],
+  invited: [{
+    type: String,
+    ref: 'User'
   }]
 });
 

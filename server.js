@@ -20,6 +20,7 @@ routes(app);
 
 router.get('/', function(req, res) {
   res.json({
+    status: "OK",
     message: "Roomies Backend API"
   });
 });

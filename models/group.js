@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var choreSchema = require('./chore');
 var expenseSchema = require('./expense');
+var pantrySchema = require('./pantry');
 
 var groupSchema = new Schema({
   owner: {
@@ -18,7 +19,8 @@ var groupSchema = new Schema({
     ref: 'User'
   }],
   chores: [choreSchema],
-  expenses: [expenseSchema]
+  expenses: [expenseSchema],
+  pantry: [pantrySchema]
 });
 
 module.exports = mongoose.model('Group', groupSchema);

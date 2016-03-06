@@ -2,6 +2,7 @@ var UserLib = require('../lib/user');
 var GroupLib = require('../lib/group');
 var ChoreLib = require('../lib/chore');
 var ExpenseLib = require('../lib/expense');
+var PantryLib = require('../lib/pantry');
 
 var errorHandler = require('./error_handler');
 
@@ -78,6 +79,16 @@ module.exports = function(app) {
 
   app.post('/api/expense/delete', function(req, res) {
     return ExpenseLib.deleteExpense(req, res)
+      .catch(errorHandler(req, res));
+  });
+
+  app.post('/api/pantry/create', function(req, res) {
+    return PantryLib.createItem(req, res)
+      .catch(errorHandler(req, res));
+  });
+
+  app.post('/api/pantry/delete', function(req, res) {
+    return PantryLib.deleteItem(req, res)
       .catch(errorHandler(req, res));
   });
 }

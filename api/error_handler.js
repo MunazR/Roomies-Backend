@@ -1,7 +1,11 @@
-module.exports = function(res) {
+var logger = require('winston');
+
+module.exports = function(req, res) {
   return function(err) {
-    // TODO better error logging
-    console.log(err);
+    logger.error("Unexpected error", {
+      err: err,
+      req: req
+    });
 
     return res.status(500).send({
       status: "error",

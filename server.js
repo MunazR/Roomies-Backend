@@ -16,7 +16,6 @@ var port = process.env.PORT || config.server.port;
 
 var router = express.Router();
 
-// Register routes
 routes(app);
 
 router.get('/', function(req, res) {

@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var choreSchema = require('./chore');
+
 var groupSchema = new Schema({
   owner: {
     type: String,
@@ -13,7 +15,8 @@ var groupSchema = new Schema({
   invited: [{
     type: String,
     ref: 'User'
-  }]
+  }],
+  chores: [choreSchema]
 });
 
 module.exports = mongoose.model('Group', groupSchema);

@@ -1,5 +1,6 @@
 var UserLib = require('../lib/user');
 var GroupLib = require('../lib/group');
+var ChoreLib = require('../lib/chore');
 
 module.exports = function(app) {
   app.post('/api/login', function(req, res) {
@@ -153,6 +154,36 @@ module.exports = function(app) {
 
     if (ownerId && ownerId.length && facebookId && facebookId.length) {
       return GroupLib.acceptInvite(req, res);
+    } else {
+      return res.status(400).send({
+        status: "Bad request",
+        message: "Invalid data"
+      });
+    }
+  });
+
+  app.post('/api/chore/create', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var chore = data.chore;
+
+    if (facebookId && facebookId.length && chore && chore.title && chore.title.length && chore.assignedTo && chore.assignedTo.length) {
+      return ChoreLib.createChore(req, res);
+    } else {
+      return res.status(400).send({
+        status: "Bad request",
+        message: "Invalid data"
+      });
+    }
+  });
+
+  app.post('/api/chore/delete', function(req, res) {
+    var data = req.body;
+    var facebookId = data.facebookId;
+    var choreId = data.choreId;
+
+    if (facebookId && facebookId.length && choreId && choreId.length) {
+      return ChoreLib.deleteChore(req, res);
     } else {
       return res.status(400).send({
         status: "Bad request",

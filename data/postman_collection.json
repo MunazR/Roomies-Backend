@@ -19,7 +19,8 @@
     "48e6d424-c521-748b-fff1-ce02bcdcde67",
     "d2fb22fa-ba40-0b88-57ad-c987088535c9",
     "ff4ace1e-8b1f-82d4-66fa-5c334c3e619d",
-    "145832d8-5736-1735-c92d-71bd8a25aacc"
+    "145832d8-5736-1735-c92d-71bd8a25aacc",
+    "ae3e22a8-29b6-1cf3-42b6-07c6a7d75f58"
   ],
   "folders": [],
   "timestamp": 1456183124247,
@@ -204,6 +205,26 @@
     "currentHelper": "normal",
     "helperAttributes": {},
     "rawModeData": "{\n    \"facebookId\": \"9001\"\n}"
+  }, {
+    "id": "ae3e22a8-29b6-1cf3-42b6-07c6a7d75f58",
+    "headers": "Content-Type: application/json\n",
+    "url": "{{roomies}}/api/pantry/delete",
+    "pathVariables": {},
+    "preRequestScript": "",
+    "method": "POST",
+    "collectionId": "031c3e28-17a6-e1a4-befe-08ce510fbce3",
+    "data": [],
+    "dataMode": "raw",
+    "name": "Delete Pantry Item",
+    "description": "",
+    "descriptionFormat": "html",
+    "time": 1457659271598,
+    "version": 2,
+    "responses": [],
+    "tests": "",
+    "currentHelper": "normal",
+    "helperAttributes": {},
+    "rawModeData": "{\n    \"facebookId\": \"9002\",\n    \"itemId\": \"56e21d2a18d35bfc2166f09a\"\n}"
   }, {
     "id": "b7c3e2a4-0101-e9fa-c8e9-ca7db2295b53",
     "headers": "Content-Type: application/json\n",

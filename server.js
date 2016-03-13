@@ -32,5 +32,10 @@ console.log('Starting server on port: ' + port);
 
 mongoose.Promise = bluebird;
 
-var dbUri = config.db.uri;
-mongoose.connect(dbUri);
+var dbUrl = config.db.url;
+var options = {
+  user: config.db.user,
+  pass: config.db.pass
+};
+
+mongoose.connect(dbUrl, options);

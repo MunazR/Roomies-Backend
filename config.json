@@ -3,6 +3,8 @@
     "port": 8080
   },
   "db": {
-    "uri": "mongodb://localhost:27017/roomies"
+    "url": "mongodb://localhost:27017/roomies",
+    "user": "MyUsername",
+    "pass": "MyPassword"
   }
 }
